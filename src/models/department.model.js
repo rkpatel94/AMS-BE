@@ -26,7 +26,6 @@ const departmentSchema = new mongoose.Schema({
     timestamps: true
 });
 
-// Index for name lookups
-departmentSchema.index({ name: 1 });
+// Indexing is handled by 'unique: true' in field definition
 
 module.exports = mongoose.model('Department', departmentSchema);

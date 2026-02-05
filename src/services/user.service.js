@@ -25,6 +25,8 @@ const getAllUsers = async () => {
         designation: user.designation,
         status: user.status,
         isActive: user.isActive,
+        avatar: user.avatar,
+        profileImage: user.profileImage,
         createdAt: user.createdAt,
         updatedAt: user.updatedAt
     }));

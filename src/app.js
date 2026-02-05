@@ -52,6 +52,9 @@ app.get('/', (req, res) => {
 // API v1 routes (versioned)
 app.use('/api/v1', v1Routes);
 
+// Compatibility mount for unversioned routes (e.g., /api/users)
+app.use('/api', v1Routes);
+
 // Swagger documentation
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 

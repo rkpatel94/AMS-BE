@@ -26,7 +26,6 @@ const designationSchema = new mongoose.Schema({
     timestamps: true
 });
 
-// Index for name lookups
-designationSchema.index({ name: 1 });
+// Indexing is handled by 'unique: true' in field definition
 
 module.exports = mongoose.model('Designation', designationSchema);

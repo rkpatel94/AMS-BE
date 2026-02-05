@@ -92,6 +92,13 @@ userSchema.virtual('fullName').get(function () {
     return `${this.firstName} ${this.lastName}`.trim();
 });
 
+// Virtual for avatar with fallback
+userSchema.virtual('avatar').get(function () {
+    if (this.profileImage) return this.profileImage;
+    const name = this.name || `${this.firstName} ${this.lastName}`.trim();
+    return `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=random&color=fff`;
+});
+
 // Pre-save middleware to populate 'name' from firstName and lastName
 userSchema.pre('save', function (next) {
     if (!this.name || this.isModified('firstName') || this.isModified('lastName')) {
@@ -100,7 +107,7 @@ userSchema.pre('save', function (next) {
     next();
 });
 
-// Index for email lookups
-userSchema.index({ email: 1 });
+// Indexing is handled by 'unique: true' in field definitions
+// module.exports = mongoose.model('User', userSchema);
 
 module.exports = mongoose.model('User', userSchema);

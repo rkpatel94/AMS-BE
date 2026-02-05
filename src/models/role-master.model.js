@@ -26,7 +26,6 @@ const roleMasterSchema = new mongoose.Schema({
     timestamps: true
 });
 
-// Index for name lookups
-roleMasterSchema.index({ name: 1 });
+// Indexing is handled by 'unique: true' in field definition
 
 module.exports = mongoose.model('RoleMaster', roleMasterSchema);
