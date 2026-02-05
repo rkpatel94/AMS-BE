@@ -1,7 +1,7 @@
 const User = require('../models/User');
 const jwt = require('jsonwebtoken');
 
-exports.microsoftLogin = async (req, res, next) => {
+exports.microsoftLogin = async (req, res) => {
     try {
         const { email, name, microsoftId } = req.body;
 
@@ -16,11 +16,18 @@ exports.microsoftLogin = async (req, res, next) => {
         // In many Enterprise AMS systems, users are pre-provisioned.
         // However, for this demo/setup, we'll create them if they don't exist.
         if (!user) {
+            const nameParts = (name || email.split('@')[0]).split(' ');
+            const firstName = nameParts[0] || 'User';
+            const lastName = nameParts.slice(1).join(' ') || ' ';
+
             user = new User({
-                name: name || email.split('@')[0],
+                firstName,
+                lastName,
+                name: name || `${firstName} ${lastName}`.trim(),
                 email: email,
                 role: 'Operator', // Default role
-                status: 'Active'
+                status: 'Active',
+                isActive: true
             });
             await user.save();
         }
@@ -50,12 +57,13 @@ exports.microsoftLogin = async (req, res, next) => {
             token,
             user: {
                 id: user._id,
-                name: user.name,
+                fullName: `${user.firstName} ${user.lastName}`.trim(),
                 email: user.email,
                 role: user.role
             }
         });
     } catch (err) {
-        next(err);
+        console.error('microsoftLogin error:', err);
+        res.status(500).json({ error: 'Internal Server Error', message: err.message });
     }
 };

@@ -29,6 +29,30 @@ router.get('/', userController.getAllUsers);
 
 /**
  * @swagger
+ * /api/users/upsert:
+ *   post:
+ *     summary: Create a new user or update an existing one
+ *     tags: [Users]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/UserUpsert'
+ *     responses:
+ *       200:
+ *         description: The user was successfully updated
+ *       201:
+ *         description: The user was successfully created
+ *       400:
+ *         description: Email already exists or invalid data
+ *       404:
+ *         description: User not found for update
+ */
+router.post('/upsert', userController.upsertUser);
+
+/**
+ * @swagger
  * /api/users/{id}:
  *   get:
  *     summary: Get the user by id
@@ -51,30 +75,6 @@ router.get('/', userController.getAllUsers);
  *         description: The user was not found
  */
 router.get('/:id', userController.getUserById);
-
-/**
- * @swagger
- * /api/users/upsert:
- *   post:
- *     summary: Create a new user or update an existing one
- *     tags: [Users]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             $ref: '#/components/schemas/UserUpsert'
- *     responses:
- *       200:
- *         description: The user was successfully updated
- *       201:
- *         description: The user was successfully created
- *       400:
- *         description: Email already exists or invalid data
- *       404:
- *         description: User not found for update
- */
-router.post('/upsert', userController.upsertUser);
 
 /**
  * @swagger

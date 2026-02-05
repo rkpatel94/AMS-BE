@@ -8,6 +8,7 @@ const swaggerSpecs = require('./config/swagger');
 // Import Routes
 const userRoutes = require('./routes/userRoutes');
 const authRoutes = require('./routes/authRoutes');
+const masterRoutes = require('./routes/masterRoutes');
 
 
 const app = express();
@@ -38,6 +39,7 @@ app.get('/', (req, res) => {
 // Mounting Routes
 app.use('/api/users', userRoutes);
 app.use('/api/auth', authRoutes);
+app.use('/api/masters', masterRoutes);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpecs));
 
 
