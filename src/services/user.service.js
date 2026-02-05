@@ -50,15 +50,22 @@ const getUserById = async (userId) => {
 /**
  * Create or update a user
  * @param {Object} userData - User data
+ * @param {Object} file - Uploaded file object (optional)
  * @returns {Promise<Object>} Created/updated user and isNew flag
  */
-const upsertUser = async (userData) => {
+const upsertUser = async (userData, file) => {
     const { id, _id, ...data } = userData;
     const userId = id || _id;
 
     // Clean up any stray id fields
     delete data._id;
     delete data.id;
+
+    // Handle profile image if file is uploaded
+    if (file) {
+        const base64Image = file.buffer.toString('base64');
+        data.profileImage = `data:${file.mimetype};base64,${base64Image}`;
+    }
 
     let user;
     let isNew = false;

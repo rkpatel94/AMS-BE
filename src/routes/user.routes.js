@@ -7,6 +7,7 @@ const express = require('express');
 const router = express.Router();
 const { userController } = require('../controllers');
 const { userValidator } = require('../validators');
+const { upload } = require('../middlewares');
 
 /**
  * @swagger
@@ -44,14 +45,21 @@ router.get('/', userController.getAllUsers);
  * @swagger
  * /api/v1/users/upsert:
  *   post:
- *     summary: Create or update a user
+ *     summary: Create or update a user (Supports Multipart/Form-Data)
  *     tags: [Users]
  *     requestBody:
  *       required: true
  *       content:
- *         application/json:
+ *         multipart/form-data:
  *           schema:
- *             $ref: '#/components/schemas/UserUpsert'
+ *             type: object
+ *             properties:
+ *               profileImage:
+ *                 type: string
+ *                 format: binary
+ *               firstName: { type: string }
+ *               lastName: { type: string }
+ *               email: { type: string }
  *     responses:
  *       200:
  *         description: User updated successfully
@@ -60,7 +68,12 @@ router.get('/', userController.getAllUsers);
  *       400:
  *         description: Validation error
  */
-router.post('/upsert', userValidator.validateUserUpsert, userController.upsertUser);
+router.post(
+    '/upsert',
+    upload.single('profileImage'),
+    userValidator.validateUserUpsert,
+    userController.upsertUser
+);
 
 /**
  * @swagger

@@ -40,7 +40,8 @@ const getUserById = asyncHandler(async (req, res) => {
  * @access  Public
  */
 const upsertUser = asyncHandler(async (req, res) => {
-    const { user, isNew } = await userService.upsertUser(req.body);
+    // Pass both body and file to the service
+    const { user, isNew } = await userService.upsertUser(req.body, req.file);
 
     sendSuccess(res, {
         statusCode: isNew ? 201 : 200,
