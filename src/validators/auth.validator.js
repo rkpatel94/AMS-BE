@@ -1,25 +1,25 @@
 /**
  * Auth Validator
- * Request validation for authentication endpoints
+ * Request validation schemas for authentication endpoints
  */
 
-const ApiError = require('../utils/api-error.util');
-
-const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const Joi = require('joi');
+const validate = require('../middlewares/validate.middleware');
 
 /**
- * Validate Microsoft login request
+ * Validation schema for Microsoft login request
  */
-const validateMicrosoftLogin = (req, res, next) => {
-    const { email } = req.body;
-
-    if (!email || typeof email !== 'string' || !EMAIL_REGEX.test(email)) {
-        return next(ApiError.badRequest('Valid email is required'));
-    }
-
-    next();
+const microsoftLoginSchema = {
+    body: Joi.object({
+        email: Joi.string().email().required().messages({
+            'string.email': 'Valid email is required',
+            'any.required': 'Email is required'
+        }),
+        name: Joi.string().optional(),
+        microsoftId: Joi.string().optional()
+    })
 };
 
 module.exports = {
-    validateMicrosoftLogin
+    validateMicrosoftLogin: validate(microsoftLoginSchema)
 };

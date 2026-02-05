@@ -108,6 +108,4 @@ userSchema.pre('save', function (next) {
 });
 
 // Indexing is handled by 'unique: true' in field definitions
-// module.exports = mongoose.model('User', userSchema);
-
 module.exports = mongoose.model('User', userSchema);

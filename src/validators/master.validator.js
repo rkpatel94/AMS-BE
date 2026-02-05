@@ -1,67 +1,49 @@
 /**
  * Master Validator
- * Request validation for master data endpoints
+ * Request validation schemas for master data endpoints
  */
 
-const ApiError = require('../utils/api-error.util');
-
-const VALID_TYPES = ['department', 'role', 'designation'];
+const Joi = require('joi');
+const validate = require('../middlewares/validate.middleware');
+const { MASTER_TYPES } = require('../config/constants.config');
 
 /**
- * Validate master type parameter
+ * Validation schema for master type parameter
  */
-const validateMasterType = (req, res, next) => {
-    const { type } = req.params;
-
-    if (!type || !VALID_TYPES.includes(type.toLowerCase())) {
-        return next(ApiError.badRequest(`type must be one of: ${VALID_TYPES.join(', ')}`));
-    }
-
-    next();
+const masterTypeSchema = {
+    params: Joi.object({
+        type: Joi.string().valid(...Object.values(MASTER_TYPES)).required().lowercase()
+    })
 };
 
 /**
- * Validate master upsert request
+ * Validation schema for master upsert request
  */
-const validateMasterUpsert = (req, res, next) => {
-    const { name } = req.body;
-    const errors = [];
-
-    if (!name || typeof name !== 'string' || name.trim().length === 0) {
-        errors.push('name is required');
-    }
-
-    if (name && name.trim().length > 100) {
-        errors.push('name must not exceed 100 characters');
-    }
-
-    if (errors.length > 0) {
-        return next(ApiError.badRequest(errors.join('; ')));
-    }
-
-    next();
+const masterUpsertSchema = {
+    body: Joi.object({
+        id: Joi.string().regex(/^[a-fA-F0-9]{24}$/).allow(null, '').messages({
+            'string.pattern.base': 'Invalid ID format'
+        }),
+        name: Joi.string().required().max(100).trim(),
+        description: Joi.string().allow(null, '').max(500).trim(),
+        status: Joi.string().valid('Active', 'Inactive').default('Active')
+    })
 };
 
 /**
- * Validate ID parameter
+ * Validation schema for ID parameter
  */
-const validateIdParam = (req, res, next) => {
-    const { id } = req.params;
-
-    if (!id || typeof id !== 'string' || id.trim().length === 0) {
-        return next(ApiError.badRequest('ID parameter is required'));
-    }
-
-    const objectIdRegex = /^[a-fA-F0-9]{24}$/;
-    if (!objectIdRegex.test(id)) {
-        return next(ApiError.badRequest('Invalid ID format'));
-    }
-
-    next();
+const idParamSchema = {
+    params: Joi.object({
+        type: Joi.string().valid(...Object.values(MASTER_TYPES)).required().lowercase(),
+        id: Joi.string().regex(/^[a-fA-F0-9]{24}$/).required().messages({
+            'string.pattern.base': 'Invalid ID format'
+        })
+    })
 };
 
 module.exports = {
-    validateMasterType,
-    validateMasterUpsert,
-    validateIdParam
+    validateMasterType: validate(masterTypeSchema),
+    validateMasterUpsert: validate(masterUpsertSchema),
+    validateIdParam: validate(idParamSchema)
 };
