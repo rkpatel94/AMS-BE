@@ -42,18 +42,24 @@ exports.getUserById = async (req, res) => {
 exports.upsertUser = async (req, res) => {
     console.log('upsertUser body:', req.body);
     try {
-        const { id, ...userData } = req.body;
+        // Handle both 'id' and '_id' from frontend
+        const { id, _id, ...userData } = req.body;
+        const userId = id || _id;
+
+        // Remove any _id that might be in userData
+        delete userData._id;
+        delete userData.id;
 
         let user;
-        if (id && mongoose.Types.ObjectId.isValid(id)) {
-            user = await User.findByIdAndUpdate(id, userData, { new: true, runValidators: true });
+        if (userId && mongoose.Types.ObjectId.isValid(userId)) {
+            user = await User.findByIdAndUpdate(userId, userData, { new: true, runValidators: true });
             if (!user) return res.status(404).json({ error: 'User not found for update' });
         } else {
             user = new User(userData);
             await user.save();
         }
 
-        res.status(id ? 200 : 201).json(user);
+        res.status(userId ? 200 : 201).json(user);
     } catch (err) {
         console.error('upsertUser error:', err);
         if (err.code === 11000) {
